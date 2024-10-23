@@ -334,9 +334,10 @@ class Global {
     
     private func mapPreload(){
         let atlas = SKTextureAtlas(named: "Map")
-        atlas.preload {
-            for texture in atlas.textureNames{
-                if texture.contains("map1_"){
+        atlas.preload { [weak self] in
+            guard let self else { return }
+            for texture in atlas.textureNames {
+                if texture.contains("map1_") {
                     self.map[.Ragnarok]!.append(atlas.textureNamed("map1_\(self.map[.Ragnarok]!.count + 1)"))
                     print(texture)
                 }

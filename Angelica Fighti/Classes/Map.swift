@@ -19,55 +19,45 @@ class Map: NSObject{
     private var timer: Timer?
     
     private var mapTextures: [SKTexture]
-    private var bottomTexture: SKTexture
-    private var midTexture: SKTexture
-    private var topTexture: SKTexture
     private var currentIndex: Int
-    
-    
-    let top:SKSpriteNode
-    let mid:SKSpriteNode
-    let bottom:SKSpriteNode
+        
+    let top: SKSpriteNode
+    let mid: SKSpriteNode
+    let bottom: SKSpriteNode
     
     init(maps: [SKTexture], scene: SKScene){
         
-        if maps.count < 3{
+        if maps.count < 3 {
             fatalError("maps should have at least 3 textures.")
         }
-        
-        currentIndex = randomInt(min: 0, max: maps.count - 3)
+
         mapTextures = maps
-        bottomTexture = mapTextures[currentIndex]
-        midTexture = mapTextures[currentIndex + 1]
-        topTexture = mapTextures[currentIndex + 2]
-        currentIndex = currentIndex + 2
+        let bottomTexture = mapTextures[0]
+        let midTexture = mapTextures[1]
+        let topTexture = mapTextures[2]
+        currentIndex = 2
         
-        // CGSize(width: screenSize.width, height: screenSize.height)
-        let tsize = CGSize(width: screenSize.width, height: screenSize.width)
+        let edge = 1.1 * max(screenSize.width, screenSize.height / 3.0)
+        let textureSize = CGSize(width: edge, height: edge)
         
-        mid = SKSpriteNode()
-        mid.texture = midTexture
-        mid.size = tsize
-        mid.anchorPoint = CGPoint(x: 0.5, y: 0)
+        let createNode: (SKTexture) -> SKSpriteNode = { texture in
+            let node = SKSpriteNode()
+            node.texture = texture
+            node.size = textureSize
+            node.anchorPoint = CGPoint(x: 0.5, y: 0)
+            node.zPosition = -5
+            node.alpha = 0.0
+            return node
+        }
+                        
+        mid = createNode(midTexture)
         mid.position = CGPoint(x: screenSize.width/2, y: mid.size.height/2)
-        mid.zPosition = -5
         
-        bottom = SKSpriteNode()
-        bottom.texture = bottomTexture
-        bottom.size = tsize
-        bottom.anchorPoint = CGPoint(x: 0.5, y: 0)
+        bottom = createNode(bottomTexture)
         bottom.position = CGPoint(x: screenSize.width/2, y: mid.position.y - mid.size.height)
-        bottom.zPosition = -5
         
-        top = SKSpriteNode()
-        top.texture = topTexture
-        top.size = tsize
-        top.anchorPoint = CGPoint(x: 0.5, y: 0)
+        top = createNode(topTexture)
         top.position = CGPoint(x: screenSize.width/2, y: mid.position.y + mid.size.height)
-        top.zPosition = -5
-        // create function to start action for moving map
-        
-        (top.alpha, bottom.alpha, mid.alpha) = (0.0, 0.0, 0.0)
         
         scene.addChildren([mid, bottom, top])
     }
