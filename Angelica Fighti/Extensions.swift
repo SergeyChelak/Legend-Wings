@@ -107,7 +107,7 @@ extension SKLabelNode{
 /*RANDOM FUNCTIONS */
 
 func random() -> CGFloat {
-    return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+    return CGFloat(Float(arc4random()) / Float(UInt32.max))
 }
 
 func random( min: CGFloat, max: CGFloat) -> CGFloat {

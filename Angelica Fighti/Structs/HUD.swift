@@ -73,7 +73,7 @@ struct HUD{
     }
     
     private func isValidString(_ str:String) -> Bool{
-        for c in str.characters{
+        for c in str {
             if !validChar.contains(c){
                 print("\(str): IT IS INVALID")
                 return false
@@ -84,14 +84,14 @@ struct HUD{
     
     private func getTextures(_ text:String) -> [SKTexture]{
         var pack:[SKTexture] = []
-        for c in text.characters.reversed(){
+        for c in text.reversed() {
             pack.append(global.getHUDTexture(hudType: .Gold, text: String(c)))
         }
         return pack
     }
     
     private func stringParser(_ str:String){
-        for c in str.characters.reversed(){
+        for c in str.reversed(){
             print(c)
         }
         
