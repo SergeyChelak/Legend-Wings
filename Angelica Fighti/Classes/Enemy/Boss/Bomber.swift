@@ -44,7 +44,7 @@ class Bomber:Enemy{
         // Set initial alpha
         self.physicsBody = SKPhysicsBody(texture: global.getMainTexture(main: .Boss_1), size: self.size)
         self.physicsBody!.isDynamic = true // allow physic simulation to move it
-        self.physicsBody!.categoryBitMask = PhysicsCategory.Imune // None at beginning
+        self.physicsBody!.categoryBitMask = PhysicsCategory.Immune // None at beginning
         self.physicsBody!.affectedByGravity = false
         self.physicsBody!.fieldBitMask = GravityCategory.None
         self.physicsBody!.collisionBitMask = 0

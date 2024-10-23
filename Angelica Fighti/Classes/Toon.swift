@@ -11,7 +11,7 @@ import SpriteKit
 
 class Toon{
     
-    enum Character:String{
+    enum Character: String{
         case Alpha = "ALPHA"
         case Beta = "BETA"
         case Celta = "CELTA"
@@ -120,20 +120,22 @@ class Toon{
         let bulletLevel = infoDict.value(forKey: "BulletLevel") as! Int
         
         bullet = Projectile(posX: node.position.x, posY: node.position.y, char: self.charType, bulletLevel: bulletLevel)
-        node.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: node.size.width/4, height: node.size.height/2))
-        node.physicsBody!.isDynamic = true // allow physic simulation to move it
-        node.physicsBody!.affectedByGravity = false
-        node.physicsBody!.allowsRotation = false // not allow it to rotate
-        node.physicsBody!.collisionBitMask = 0
-        node.physicsBody!.categoryBitMask = PhysicsCategory.Player
-        node.physicsBody!.contactTestBitMask = PhysicsCategory.Enemy
-        
+        node.physicsBody = {
+            let physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: node.size.width/4, height: node.size.height/2))
+            physicsBody.isDynamic = true // allow physic simulation to move it
+            physicsBody.affectedByGravity = false
+            physicsBody.allowsRotation = false // not allow it to rotate
+            physicsBody.collisionBitMask = 0
+            physicsBody.categoryBitMask = PhysicsCategory.Player
+            physicsBody.contactTestBitMask = PhysicsCategory.Enemy
+            return physicsBody
+        }()
         // Apply Magnetic Field
-        let mfield = SKFieldNode.radialGravityField()
-        mfield.region = SKRegion(radius: Float(node.size.width))
-        mfield.strength = 120.0
-        mfield.categoryBitMask = GravityCategory.Player
-        node.addChild(mfield)
+        let magneticField = SKFieldNode.radialGravityField()
+        magneticField.region = SKRegion(radius: Float(node.size.width))
+        magneticField.strength = 120.0
+        magneticField.categoryBitMask = GravityCategory.Player
+        node.addChild(magneticField)
         
     }
     

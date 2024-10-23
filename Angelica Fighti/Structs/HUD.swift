@@ -9,8 +9,7 @@
 import Foundation
 import SpriteKit
 
-struct HUD{
-    
+struct HUD {
     enum TextType {
         case Gold
         case Trophy
@@ -21,10 +20,8 @@ struct HUD{
     private var height:CGFloat
     private var pos:CGPoint
    // private var anchorPoint:CGPoint
-    private var textType:TextType
-    private var validChar:Array = Array(0..<10).map { (i) -> Character in
-        return Character(String(i))
-    }
+    private var textType: TextType
+    private var validChars = (0..<10).map { Character(String($0)) }
     
     init(width w:CGFloat, height h:CGFloat, position p:CGPoint, type:TextType){
         root = SKSpriteNode()
@@ -33,11 +30,10 @@ struct HUD{
         pos = p
       //  anchorPoint = acp
         textType = type
-        validChar.append(Character(String(",")))
+        validChars.append(Character(String(",")))
     }
     
     mutating func getNode(text:String) -> SKSpriteNode?{
-        
         if !isValidString(text){
             return nil
         }
@@ -52,34 +48,25 @@ struct HUD{
        // node.color = UIColor.black
         let textures = getTextures(text)
         
-        var xTrack:CGFloat = 0.0
-        
-        for (i, t) in textures.enumerated(){
-            
-            if i == 0 {
-                xTrack = 0
-            }
-            let hudtexture = SKSpriteNode()
-            hudtexture.texture = t
-            hudtexture.size = CGSize(width: t.size().width, height: t.size().height)
-            let tw = hudtexture.size.width
-            let th = hudtexture.size.height
-            hudtexture.position = CGPoint(x: width/2 - tw*0.5 - xTrack, y: height/2 - th)
-            node.addChild(hudtexture)
+        var xTrack: CGFloat = 0.0
+        for t in textures {
+            let hudTexture = SKSpriteNode()
+            hudTexture.texture = t
+            hudTexture.size = t.size()
+            let tw = hudTexture.size.width
+            let th = hudTexture.size.height
+            hudTexture.position = CGPoint(x: width/2 - tw*0.5 - xTrack, y: height/2 - th)
+            node.addChild(hudTexture)
             xTrack += tw*0.8
         }
         
         return node
     }
     
-    private func isValidString(_ str:String) -> Bool{
-        for c in str {
-            if !validChar.contains(c){
-                print("\(str): IT IS INVALID")
-                return false
-            }
+    private func isValidString(_ str:String) -> Bool {
+        str.allSatisfy {
+            validChars.contains($0)
         }
-        return true
     }
     
     private func getTextures(_ text:String) -> [SKTexture]{
@@ -89,16 +76,4 @@ struct HUD{
         }
         return pack
     }
-    
-    private func stringParser(_ str:String){
-        for c in str.reversed(){
-            print(c)
-        }
-        
-        
-       // print("\(str): IT IS VALID")
-    }
-    
-    
-    
 }

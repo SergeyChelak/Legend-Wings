@@ -42,3 +42,9 @@ func spawnClouds() -> [SKSpriteNode] {
         return cloud
     }
 }
+
+func runAction(_ action: SKAction, on nodes: [SKSpriteNode]) {
+    nodes.forEach {
+        $0.run(action)
+    }
+}

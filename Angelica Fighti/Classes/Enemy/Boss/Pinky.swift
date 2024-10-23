@@ -142,7 +142,7 @@ class Pinky:Enemy{
             let physicsBody = SKPhysicsBody(circleOfRadius: body.size.width/2)
             physicsBody.isDynamic = true
             physicsBody.affectedByGravity = false
-            physicsBody.categoryBitMask = PhysicsCategory.Imune
+            physicsBody.categoryBitMask = PhysicsCategory.Immune
             physicsBody.friction = 0
             physicsBody.collisionBitMask = PhysicsCategory.Wall
             physicsBody.restitution = 1

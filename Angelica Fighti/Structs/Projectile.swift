@@ -13,8 +13,8 @@ struct Projectile {
     
     private var originX:CGFloat
     private var originY:CGFloat
-    private var name = "bullet" // Do not change it.
-    private var bulletnode:SKSpriteNode
+    private let name = "bullet" // Do not change it.
+    private var bulletNode: SKSpriteNode
     private var bulletLevel:Int
     private let bulletMaker = BulletMaker()
     
@@ -22,35 +22,34 @@ struct Projectile {
         originX = posX
         originY = posY + 35
         self.bulletLevel = bulletLevel
-        bulletnode = bulletMaker.make(level: bulletLevel, char: char)
+        bulletNode = bulletMaker.make(level: bulletLevel, char: char)
         
-        bulletnode.userData = NSMutableDictionary()
-        bulletnode.name = name
-        bulletnode.setScale(0.25)
-        bulletnode.physicsBody = SKPhysicsBody(circleOfRadius: 3)
-        bulletnode.physicsBody!.affectedByGravity = false
-        bulletnode.physicsBody!.collisionBitMask = 0
-        bulletnode.physicsBody!.categoryBitMask = PhysicsCategory.Projectile
-        bulletnode.physicsBody!.fieldBitMask = GravityCategory.None // Not affect by Magnetic Force
-        bulletnode.physicsBody!.contactTestBitMask = PhysicsCategory.Enemy | PhysicsCategory.Imune
-        bulletnode.physicsBody!.allowsRotation = false
-        bulletnode.physicsBody!.velocity = CGVector(dx: 0, dy: 1500)
-        
-        
+        bulletNode.userData = NSMutableDictionary()
+        bulletNode.name = name
+        bulletNode.setScale(0.25)
+        bulletNode.physicsBody = {
+            let physicsBody = SKPhysicsBody(circleOfRadius: 3)
+            physicsBody.affectedByGravity = false
+            physicsBody.collisionBitMask = 0
+            physicsBody.categoryBitMask = PhysicsCategory.Projectile
+            physicsBody.fieldBitMask = GravityCategory.None // Not affect by Magnetic Force
+            physicsBody.contactTestBitMask = PhysicsCategory.Enemy | PhysicsCategory.Immune
+            physicsBody.allowsRotation = false
+            physicsBody.velocity = CGVector(dx: 0, dy: 1500)
+            return physicsBody
+        }()
     }
     
-    func shoot() -> SKSpriteNode{
-        
-        let bullet = bulletnode.copy() as! SKSpriteNode
+    func shoot() -> SKSpriteNode {
+        let bullet = bulletNode.copy() as! SKSpriteNode
         bullet.power = getPowerValue()
         bullet.position = CGPoint(x: originX, y: originY)
-         bullet.run(SKAction.scale(to: 1.0, duration: 0.2))
-              bullet.run(SKAction.sequence([SKAction.wait(forDuration: 0.38), SKAction.removeFromParent()]))
+        bullet.run(SKAction.scale(to: 1.0, duration: 0.2))
+        bullet.run(SKAction.sequence([SKAction.wait(forDuration: 0.38), SKAction.removeFromParent()]))
         return bullet
     }
     
-    func generateTouchedEnemyEmmiterNode(x posX:CGFloat, y posY:CGFloat) -> SKEmitterNode{
-        
+    func generateTouchedEnemyEmitterNode(x posX:CGFloat, y posY:CGFloat) -> SKEmitterNode{
         let effect = SKEmitterNode(fileNamed: "bulling.sks")
         effect!.position = CGPoint(x: posX, y: posY)
         

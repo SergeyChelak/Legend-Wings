@@ -59,22 +59,20 @@ class AccountInfo{
         data = Data()
     }
     
-    func load() -> Bool{
-
+    func load() -> Bool {
         // Update Root
-            level = data.plist.value(forKey: "Level") as! Int
-            gold = data.plist.value(forKey: "Coin") as! Int
-            experience = data.plist.value(forKey: "Experience") as! CGFloat
-            highscore = data.plist.value(forKey: "Highscore") as! Int
-            currentToonIndex = data.plist.value(forKey: "CurrentToon") as! Int
-        
-        let toondDict = data.plist.value(forKey: "Toons") as! NSDictionary
-        
-            characters[0].load(infoDict: toondDict.value(forKey: "Alpha") as! NSDictionary)
-            characters[1].load(infoDict: toondDict.value(forKey: "Beta") as! NSDictionary)
-            characters[2].load(infoDict: toondDict.value(forKey: "Celta") as! NSDictionary)
-            characters[3].load(infoDict: toondDict.value(forKey: "Delta") as! NSDictionary)
-        
+        level = data.plist.value(forKey: "Level") as! Int
+        gold = data.plist.value(forKey: "Coin") as! Int
+        experience = data.plist.value(forKey: "Experience") as! CGFloat
+        highscore = data.plist.value(forKey: "Highscore") as! Int
+        currentToonIndex = data.plist.value(forKey: "CurrentToon") as! Int
+        guard let toonDict = data.plist.value(forKey: "Toons") as? NSDictionary else {
+            return false
+        }
+        characters[0].load(infoDict: toonDict.value(forKey: "Alpha") as! NSDictionary)
+        characters[1].load(infoDict: toonDict.value(forKey: "Beta") as! NSDictionary)
+        characters[2].load(infoDict: toonDict.value(forKey: "Celta") as! NSDictionary)
+        characters[3].load(infoDict: toonDict.value(forKey: "Delta") as! NSDictionary)
         return true
     }
     

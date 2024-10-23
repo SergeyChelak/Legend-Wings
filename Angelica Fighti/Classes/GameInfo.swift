@@ -242,7 +242,7 @@ class GameInfo: GameInfoDelegate {
     }
     
     internal func getToonBulletEmmiterNode(x px:CGFloat, y py:CGFloat) -> SKEmitterNode{
-        return account.getCurrentToon().getBullet().generateTouchedEnemyEmmiterNode(x: px, y: py)
+        return account.getCurrentToon().getBullet().generateTouchedEnemyEmitterNode(x: px, y: py)
     }
     internal func requestChangeToon(index: Int){
         self.account.selectToonIndex(index: index)

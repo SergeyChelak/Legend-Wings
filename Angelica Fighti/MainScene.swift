@@ -317,7 +317,7 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
          NOTE2: Enemy's projectile are considered as Enemy. Thus, need to ignore when projectile hit enemy attack
          */
         
-        if (h_node.physicsBody?.categoryBitMask == PhysicsCategory.Imune){
+        if (h_node.physicsBody?.categoryBitMask == PhysicsCategory.Immune){
             contactType = .Immune
         }
             
