@@ -79,7 +79,7 @@ class GameInfo: GameInfoDelegate {
             return (false, "account error")
         }
         // update infobar
-        infobar.updateGoldBalnceLabel(balance: account.getGoldBalance())
+        infobar.updateGoldBalanceLabel(balance: account.getGoldBalance())
         addChild(infobar)
         return createWalls(leftXBound: 0, rightXBound:screenSize.width, width: 50, height: screenSize.height)
     }
@@ -267,7 +267,7 @@ class GameInfo: GameInfoDelegate {
         let (success, response) = self.account.upgradeBullet()
         
         if success {
-            self.infobar.updateGoldBalnceLabel(balance: self.account.getGoldBalance())
+            self.infobar.updateGoldBalanceLabel(balance: self.account.getGoldBalance())
         }
         return (success, response)
     }

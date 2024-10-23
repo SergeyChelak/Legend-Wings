@@ -32,11 +32,5 @@ extension SKScene {
     
     func removeChildren(_ names: [String]) {
         names.forEach(removeChild(withName:))
-    }
-    
-    func addChildren(_ nodes: [SKNode]) {
-        nodes.forEach {
-            addChild($0)
-        }
-    }
+    }    
 }

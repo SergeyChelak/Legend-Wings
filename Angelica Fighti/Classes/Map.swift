@@ -59,7 +59,7 @@ class Map: NSObject{
         top = createNode(topTexture)
         top.position = CGPoint(x: screenSize.width/2, y: mid.position.y + mid.size.height)
         
-        scene.addChildren([mid, bottom, top])
+        scene.addChildren(mid, bottom, top)
     }
     
     private func getNextTexture() -> SKTexture {
@@ -73,11 +73,11 @@ class Map: NSObject{
         
         // fade in
         let fin = SKAction.fadeAlpha(to: 1, duration: 0.5)
-        runAction(fin, on: [top, mid, bottom])
+        runAction(fin, on: top, mid, bottom)
         
         // Action
         let moveDown = SKAction.moveBy(x: 0, y: -2, duration: 0.01)
-        runAction(SKAction.repeatForever(moveDown), on: [mid, bottom, top])
+        runAction(SKAction.repeatForever(moveDown), on: mid, bottom, top)
     }
     
      @objc func update() {

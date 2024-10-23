@@ -47,13 +47,13 @@ class Infobar:SKSpriteNode{
         
         fifthTemplate = customFifthLabel(itemSize: rootItemSize, prevNodePosition: thirdTemplate.position)
         
-        [
+        addChildren(
             firstTemplate,
             secondTemplate,
             thirdTemplate,
             fourthTemplate,
             fifthTemplate
-        ].forEach { addChild($0) }
+        )
         
         // Note: It will show debug view only if debug is enabled.
         debug()
@@ -209,7 +209,7 @@ class Infobar:SKSpriteNode{
         coinLabel.text = numberToString(num: coinCount)
     }
     
-    internal func updateGoldBalnceLabel(balance:Int){
+    internal func updateGoldBalanceLabel(balance:Int){
 
         
         guard let coinBarLabel = secondTemplate.childNode(withName: "bar") else{
@@ -229,36 +229,31 @@ class Infobar:SKSpriteNode{
     }
     
     internal func fadeAway(){
-        
         let fadeAwayAction = SKAction.fadeAlpha(to: 0, duration: 0.2)
-        
-        let showCoinLabelAction = SKAction.group([SKAction.moveBy(x: 0, y: -100, duration: 0.3), SKAction.fadeAlpha(to: 1.0, duration: 0.3)])
-        
-        firstTemplate.run(fadeAwayAction)
-        secondTemplate.run(fadeAwayAction)
-        thirdTemplate.run(fadeAwayAction)
-        fourthTemplate.run(fadeAwayAction)
+        let showCoinLabelAction = SKAction.group([
+            SKAction.moveBy(x: 0, y: -100, duration: 0.3),
+            SKAction.fadeAlpha(to: 1.0, duration: 0.3)
+        ])
+        runAction(fadeAwayAction, on: firstTemplate, secondTemplate, thirdTemplate, fourthTemplate)
         fifthTemplate.run(showCoinLabelAction)
     }
-    
     
     private func numberToString(num:Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-        return formatter.string(from: num as NSNumber)!
+        return formatter.string(from: num as NSNumber) ?? ""
     }
+    
     private func debug(){
         if !enableDebug{
             return
         }
-        
         self.color = .red
         firstTemplate.color = .yellow
         secondTemplate.color = .blue
         thirdTemplate.color = .brown
         fourthTemplate.color = .purple
         fifthTemplate.color = .black
-        
         return
     }
 }

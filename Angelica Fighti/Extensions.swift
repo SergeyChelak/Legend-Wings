@@ -55,6 +55,10 @@ extension SKNode {
         }
         run(SKAction.sequence([action, SKAction.run(completion)]))
     }
+    
+    func addChildren(_ nodes: SKNode...) {
+        nodes.forEach(addChild(_:))
+    }
 }
 
 // MARK:
