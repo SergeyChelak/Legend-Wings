@@ -11,10 +11,7 @@ import AVFoundation
 import SpriteKit
 import UIKit
 
-
-
-protocol ProjectileDelegate{
-    
+protocol ProjectileDelegate {
     func add(sknode: SKNode)
 }
 
@@ -34,23 +31,20 @@ enum ContactType{
     case None
 }
 
+// MARK: SKNode
+fileprivate let userDataKeyPower = "power"
 
-
-extension SKNode{
-    var power:CGFloat!{
+extension SKNode {
+    var power: CGFloat {
         get {
-            
-            if let v = userData?.value(forKey: "power") as? CGFloat{
-                return v
-            }
-            else{
-                print ("Extension SKNode Error for POWER Variable: ",  userData?.value(forKey: "power") ?? -1.0 )
+            guard let v = userData?.value(forKey: userDataKeyPower) as? CGFloat else {
+                print ("Extension SKNode Error for POWER Variable: ",  userData?.value(forKey: userDataKeyPower) ?? -1.0 )
                 return -9999.0
             }
-            
+            return v
         }
         set(newValue) {
-            userData?.setValue(newValue, forKey: "power")
+            userData?.setValue(newValue, forKey: userDataKeyPower)
         }
     }
     
@@ -59,26 +53,20 @@ extension SKNode{
             run(action)
             return
         }
-        
         run(SKAction.sequence([action, SKAction.run(completion)]))
-        
     }
-    
-    
-    
 }
 
-
-extension SKScene{
-    func removeUIViews(){
-            for view in (view?.subviews)! {
-                view.removeFromSuperview()
+// MARK: scene utils
+extension SKScene {
+    func removeUIViews() {
+        view?.subviews
+            .forEach {
+                $0.removeFromSuperview()
             }
-            
     }
     
-    func recursiveRemovingSKActions(sknodes:[SKNode]){
-        
+    func recursiveRemovingSKActions(sknodes: [SKNode]) {
         for childNode in sknodes{
             childNode.removeAllActions()
             if childNode.children.count > 0 {
@@ -86,15 +74,13 @@ extension SKScene{
             }
             
         }
-        
     }
 }
 
-extension SKLabelNode{
+// MARK:
+extension SKLabelNode {
     func shadowNode(nodeName:String) -> SKEffectNode{
-        
         let myShader = SKShader(fileNamed: "gradientMonoTone")
-        
         let effectNode = SKEffectNode()
         effectNode.shader = myShader
         effectNode.shouldEnableEffects = true
@@ -104,17 +90,16 @@ extension SKLabelNode{
     }
 }
 
-/*RANDOM FUNCTIONS */
-
+// MARK: RANDOM FUNCTIONS
 func random() -> CGFloat {
-    return CGFloat(Float(arc4random()) / Float(UInt32.max))
+    CGFloat(Float(arc4random()) / Float(UInt32.max))
 }
 
 func random( min: CGFloat, max: CGFloat) -> CGFloat {
-    return random() * (max - min) + min
+    random() * (max - min) + min
 }
 
 func randomInt( min: Int, max: Int) -> Int{
     //return randomInt() * (max - min ) + min
-    return Int(arc4random_uniform(UInt32(max - min + 1))) + min
+    Int(arc4random_uniform(UInt32(max - min + 1))) + min
 }
