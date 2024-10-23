@@ -22,14 +22,7 @@ struct Projectile {
         originX = posX
         originY = posY + 35
         self.bulletLevel = bulletLevel
-        
-        if let blevel = BulletMaker.Level(rawValue: bulletLevel){
-           bulletnode = bulletMaker.make(level: blevel, char: char)
-        }
-        else{
-            print("Invalid bullet level. Returning 1")
-            bulletnode = bulletMaker.make(level: .Level_1, char: char)
-        }
+        bulletnode = bulletMaker.make(level: bulletLevel, char: char)
         
         bulletnode.userData = NSMutableDictionary()
         bulletnode.name = name

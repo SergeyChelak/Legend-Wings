@@ -182,7 +182,7 @@ class CharacterMenuScene:SKScene{
             leftRoot.addChild(iconBadge)
         
         // Projectile Sprite
-        let projectile = bulletMaker.make(level: .Level_1, char: .Alpha)
+        let projectile = bulletMaker.make(level: 1, char: .Alpha)
             projectile.name = "projectile"
             projectile.setScale(0.5)
             iconBadge.addChild(projectile)
@@ -478,16 +478,13 @@ class CharacterMenuScene:SKScene{
         
         // Update Projectile (Bullet)
         let bulletLevel = gameinfo.requestToonBulletLevel(index: toon.rawValue)
-        guard let currToon = Toon.Character(rawValue: toon.string),
-              let blevel = BulletMaker.Level(rawValue: bulletLevel)
-        else{
+        guard let currToon = Toon.Character(rawValue: toon.string) else{
             return
         }
-        
         if let bullet = icon.childNode(withName: "projectile"){
-        bullet.removeFromParent()
+            bullet.removeFromParent()
         }
-        let newBullet = bulletMaker.make(level: blevel, char: currToon)
+        let newBullet = bulletMaker.make(level: bulletLevel, char: currToon)
         newBullet.name = "projectile"
         newBullet.setScale(0.5)
         icon.addChild(newBullet)
@@ -563,11 +560,9 @@ class CharacterMenuScene:SKScene{
         let nextBulletLevel = gameinfo.requestToonBulletLevel(index: self.currToonIndex) + 1
         let currCharStr = CharacterMenuScene.CurrToon(rawValue: self.currToonIndex)!.string
         
-        guard let currToon = Toon.Character(rawValue: currCharStr),
-            let blevel = BulletMaker.Level(rawValue: nextBulletLevel)
-            else{
-                return false
-            }
+        guard let currToon = Toon.Character(rawValue: currCharStr) else{
+            return false
+        }
         
         let upgradeSceneRoot = SKSpriteNode()
             upgradeSceneRoot.name = "upgrade_rootView"
@@ -612,7 +607,7 @@ class CharacterMenuScene:SKScene{
         
         // Icon Sprite (Bullet Display)
         
-        let iconSprite = bulletMaker.make(level: blevel, char: currToon)
+        let iconSprite = bulletMaker.make(level: nextBulletLevel, char: currToon)
             iconSprite.name = "projectile"
             icon.addChild(iconSprite)
         
@@ -725,11 +720,9 @@ class CharacterMenuScene:SKScene{
         let toon = CurrToon(rawValue: currToonIndex)!
         let currLevelBullet = gameinfo.requestToonBulletLevel(index: currToonIndex)
         let nextLevelBullet = currLevelBullet + 1
-        guard let currToon = Toon.Character(rawValue: toon.string),
-              let blevel = BulletMaker.Level(rawValue: nextLevelBullet)
-        else{return}
-        
-        
+        guard let currToon = Toon.Character(rawValue: toon.string) else{
+            return
+        }
         
         let root = self.childNode(withName: "upgrade_rootView")!
         let contentRoot = root.childNode(withName: "upgrade_contentRoot")!
@@ -755,7 +748,7 @@ class CharacterMenuScene:SKScene{
             bullet.removeFromParent()
         }
         
-            let newBullet = bulletMaker.make(level:  blevel, char: currToon)
+            let newBullet = bulletMaker.make(level:  nextLevelBullet, char: currToon)
             newBullet.name = "projectile"
             icon.addChild(newBullet)
             leftLabel.text = "LV \(String(currLevelBullet))"

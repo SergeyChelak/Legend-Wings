@@ -47,17 +47,16 @@ class Infobar:SKSpriteNode{
         
         fifthTemplate = customFifthLabel(itemSize: rootItemSize, prevNodePosition: thirdTemplate.position)
         
-        
-        addChild(firstTemplate)
-        addChild(secondTemplate)
-        addChild(thirdTemplate)
-        addChild(fourthTemplate)
-        addChild(fifthTemplate)
+        [
+            firstTemplate,
+            secondTemplate,
+            thirdTemplate,
+            fourthTemplate,
+            fifthTemplate
+        ].forEach { addChild($0) }
         
         // Note: It will show debug view only if debug is enabled.
         debug()
-        
-        
     }
     
     private func makeTemplateNode(width w:CGFloat, height h:CGFloat, dx:CGFloat, name n:String) -> SKSpriteNode{
