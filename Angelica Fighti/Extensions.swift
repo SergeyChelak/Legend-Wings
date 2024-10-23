@@ -57,26 +57,6 @@ extension SKNode {
     }
 }
 
-// MARK: scene utils
-extension SKScene {
-    func removeUIViews() {
-        view?.subviews
-            .forEach {
-                $0.removeFromSuperview()
-            }
-    }
-    
-    func recursiveRemovingSKActions(sknodes: [SKNode]) {
-        for childNode in sknodes{
-            childNode.removeAllActions()
-            if childNode.children.count > 0 {
-                recursiveRemovingSKActions(sknodes: childNode.children)
-            }
-            
-        }
-    }
-}
-
 // MARK:
 extension SKLabelNode {
     func shadowNode(nodeName:String) -> SKEffectNode{

@@ -95,28 +95,18 @@ class GameInfo: GameInfoDelegate{
     }
     
     private func createWalls(leftXBound:CGFloat, rightXBound:CGFloat, width:CGFloat, height:CGFloat) -> (Bool, String){
-        
-        guard let mainscene = mainScene else{
+        guard let mainScene else{
             return (false, "mainScene is nil")
         }
-        // create invisible wall
-        
-        let leftWall = SKSpriteNode()
-        leftWall.name = "leftWall"
-        leftWall.physicsBody =  SKPhysicsBody(edgeFrom: CGPoint(x: leftXBound, y: 0), to: CGPoint(x: leftXBound, y: screenSize.height))
-        leftWall.physicsBody!.isDynamic = false
-        leftWall.physicsBody!.categoryBitMask = PhysicsCategory.Wall
-        
-        mainscene.addChild(leftWall)
-        
-        let rightWall = SKSpriteNode()
-        rightWall.name = "rightWall"
-        rightWall.physicsBody =  SKPhysicsBody(edgeFrom: CGPoint(x: rightXBound, y: 0), to: CGPoint(x: rightXBound, y: screenSize.height))
-        rightWall.physicsBody!.isDynamic = false
-        rightWall.physicsBody!.categoryBitMask = PhysicsCategory.Wall
-        
-        mainscene.addChild(rightWall)
-        
+        // create invisible wall        
+        [
+            WallData(name: "leftWall", edgeFrom: CGPoint(x: leftXBound, y: 0), to: CGPoint(x: leftXBound, y: screenSize.height)),
+            WallData(name: "rightWall" ,edgeFrom: CGPoint(x: rightXBound, y: 0), to: CGPoint(x: rightXBound, y: screenSize.height))
+        ]
+            .map(createWall)
+            .forEach {
+                mainScene.addChild($0)
+            }
         return (true, "No errors")
     }
 
@@ -146,7 +136,7 @@ class GameInfo: GameInfoDelegate{
     }
     
     private func updateGameState(){
-        guard let mainscene = mainScene else{
+        guard let mainScene else{
             print ("ERROR D00: Check updateGameState() from GameInfo")
             return
         }
@@ -154,27 +144,31 @@ class GameInfo: GameInfoDelegate{
         switch gamestate {
         case .Start:
                 // Load Map
-                map = Map(maps: global.getTextures(textures: .Map_Ragnarok), scene: mainscene)
-
+            let map = Map(maps: global.getTextures(textures: .Map_Ragnarok), scene: mainScene)
+            self.map = map
                 // Cloud action
                 let moveDownCloud = SKAction.moveTo(y: -screenSize.height*1.5, duration: 1)
                 
                 // Buildings Action
                 let scaleAction = SKAction.scale(to: 0.7, duration: 0.3)
                 let moveAction = SKAction.moveTo(y: screenSize.height/3, duration: 0.3)
+            // TODO: move `main_menu_middle_root` to constant
                 let buildingsAction = SKAction.sequence([SKAction.run(SKAction.group([scaleAction, moveAction]), onChildWithName: "main_menu_middle_root"), SKAction.wait(forDuration: 1.5), SKAction.run {
-                    self.mainScene!.childNode(withName: "main_menu_middle_root")!.removeFromParent()
-                    self.mainScene!.childNode(withName: Global.Main.Main_Menu_Background_1.rawValue)!.removeFromParent()
-                    self.mainScene!.childNode(withName: Global.Main.Main_Menu_Background_2.rawValue)!.removeFromParent()
-                    self.mainScene!.childNode(withName: Global.Main.Main_Menu_Background_3.rawValue)!.removeFromParent()
-                    self.map!.run()
-                    
-                    }])
+                    mainScene.removeChildren(
+                        [
+                            "main_menu_middle_root",
+                            Global.Main.Main_Menu_Background_1.rawValue,
+                            Global.Main.Main_Menu_Background_2.rawValue,
+                            Global.Main.Main_Menu_Background_3.rawValue
+                        ]
+                    )
+                    map.run()
+                }])
                 
                 // Create 4 clouds
                 for i in 0...3{
                     let cloud = SKSpriteNode()
-                    if ( i % 2 == 0){
+                    if i % 2 == 0 {
                         cloud.texture = global.getMainTexture(main: .StartCloud_1)
                         cloud.name = Global.Main.StartCloud_1.rawValue + String(i)
                     }
@@ -186,15 +180,15 @@ class GameInfo: GameInfoDelegate{
                     cloud.anchorPoint = CGPoint(x: 0.5, y: 0)
                     cloud.position = CGPoint(x: screenSize.width/2, y: screenSize.height)
                     cloud.zPosition = -1
-                    mainscene.addChild(cloud)
+                    mainScene.addChild(cloud)
                 }
                 
                 // Running Actions
                 infobar.fadeAway()
                 
-                mainscene.run(SKAction.sequence([SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "0"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "1"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "2"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "3")]))
+            mainScene.run(SKAction.sequence([SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "0"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "1"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "2"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "3")]))
                 
-                mainscene.run(SKAction.sequence([buildingsAction, SKAction.wait(forDuration: 3), SKAction.run{self.changeGameState(.Spawning)
+            mainScene.run(SKAction.sequence([buildingsAction, SKAction.wait(forDuration: 3), SKAction.run{self.changeGameState(.Spawning)
                     }, SKAction.wait(forDuration: 0.2), SKAction.run { self.account.getCurrentToon().getNode().run(SKAction.repeatForever(SKAction.sequence([SKAction.run {
 
                         self.addChild(self.account.getCurrentToon().getBullet().shoot())
@@ -213,7 +207,7 @@ class GameInfo: GameInfoDelegate{
             wavesForNextLevel = randomInt(min: 5, max: 10)
             
             let action = SKAction.sequence([SKAction.run({
-                self.regular_enemies.spawn(scene: mainscene)
+                self.regular_enemies.spawn(scene: mainScene)
             }), SKAction.wait(forDuration: 3)])
             
             //totalWaves
@@ -221,7 +215,7 @@ class GameInfo: GameInfoDelegate{
             let spawnAction = SKAction.repeat(action, count: wavesForNextLevel)
             let endAction = SKAction.run(didFinishSpawningEnemy)
             
-            mainscene.run(SKAction.sequence([spawnAction, endAction]))
+            mainScene.run(SKAction.sequence([spawnAction, endAction]))
             
         case .BossEncounter:
             // use this state to cancel the timer - invalidate
