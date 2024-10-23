@@ -61,7 +61,7 @@ class GameInfo: GameInfoDelegate {
         fireballEnemy = EnemyModel(type: .fireball)
         regularEnemy = EnemyModel(type: .regular)
         boss = EnemyModel(type: .boss)
-        gamestate = .NoState
+        gamestate = .noState
         timePerWave = 3.0 // 3.0 is default
         infobar = Infobar(name: "infobar")
         // delegates
@@ -103,7 +103,7 @@ class GameInfo: GameInfoDelegate {
     private func didFinishSpawningEnemy(){
         mainScene?.run(SKAction.sequence([SKAction.run { [weak self] in
             // update gamestate
-            self?.changeGameState(.BossEncounter)
+            self?.changeGameState(.bossEncounter)
             // show boss incoming
         }, SKAction.wait(forDuration: 5), SKAction.run { [weak self] in
             guard let self, let mainScene = self.mainScene else { return }
@@ -130,7 +130,7 @@ class GameInfo: GameInfoDelegate {
         }
         
         switch gamestate {
-        case .Start:
+        case .start:
                 // Load Map
             let map = Map(maps: global.getTextures(textures: .Map_Ragnarok), scene: mainScene)
             self.map = map
@@ -172,7 +172,7 @@ class GameInfo: GameInfoDelegate {
                 buildingsAction,
                 SKAction.wait(forDuration: 3),
                 SKAction.run {
-                    self.changeGameState(.Spawning)
+                    self.changeGameState(.spawning)
                 },
                 SKAction.wait(forDuration: 0.2),
                 SKAction.run { [weak self] in
@@ -189,12 +189,12 @@ class GameInfo: GameInfoDelegate {
                     currentToon.getNode().run(SKAction.repeatForever(sequence))
                 }
             ]))
-        case .WaitingState:
+        case .waitingState:
             regularEnemy.increaseDifficulty()
             fireballEnemy.increaseDifficulty()
             boss.increaseDifficulty()
-            self.changeGameState(.Spawning)
-        case .Spawning:
+            self.changeGameState(.spawning)
+        case .spawning:
             print("Spawning")
             
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(running), userInfo: nil, repeats: true)
@@ -215,7 +215,7 @@ class GameInfo: GameInfoDelegate {
             
             mainScene.run(SKAction.sequence([spawnAction, endAction]))
             
-        case .BossEncounter:
+        case .bossEncounter:
             // use this state to cancel the timer - invalidate
             print("Boss Encounter")
             timer?.invalidate()

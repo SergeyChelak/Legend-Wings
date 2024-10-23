@@ -16,11 +16,11 @@ protocol ProjectileDelegate {
 }
 
 enum GameState{
-    case Spawning  // state which waves are incoming
-    case BossEncounter // boss encounter
-    case WaitingState // Need an state
-    case NoState
-    case Start
+    case spawning  // state which waves are incoming
+    case bossEncounter // boss encounter
+    case waitingState // Need an state
+    case noState
+    case start
 }
 
 enum ContactType{

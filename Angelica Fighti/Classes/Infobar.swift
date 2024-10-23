@@ -31,7 +31,7 @@ class Infobar:SKSpriteNode{
     convenience init(name n:String){
         self.init()
         
-        let rootItemSize:CGSize = CGSize(width: screenSize.width/4, height: screenSize.height*0.05)
+        let rootItemSize = CGSize(width: screenSize.width/4, height: screenSize.height*0.05)
         
         name = n
         color = .clear
@@ -61,26 +61,19 @@ class Infobar:SKSpriteNode{
     }
     
     private func makeTemplateNode(width w:CGFloat, height h:CGFloat, dx:CGFloat, name n:String) -> SKSpriteNode{
-        
         let node = SKSpriteNode()
         node.anchorPoint = CGPoint(x: 0, y: 0)
         node.color = .clear
         node.name = n
         node.size = CGSize(width: w, height: h)
         node.position = CGPoint(x: dx, y: self.size.height - h)
-        
         return node
     }
-    
 
     private func generateTemplate(templateStyle:Template, itemSize: CGSize, name n:String, barSprite: Global.Main?, iconSprite: Global.Main, previousPos prev:CGPoint?) -> SKSpriteNode{
-        
-        var px:CGFloat!
-        
         let (w, h) = (itemSize.width, itemSize.height)
         
-        px = (prev == nil) ? 0.0 : prev!.x + w
-        
+        let px = (prev == nil) ? 0.0 : prev!.x + w
         let node = makeTemplateNode(width: w, height: h, dx: px,  name: n)
         
         // Filling the template -->

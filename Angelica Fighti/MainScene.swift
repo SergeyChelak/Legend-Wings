@@ -19,11 +19,11 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
     enum Scene{
         case MainScene
         case EndScene
-        case Character_Menu
+        case CharacterMenu
     }
     
-    var gameinfo = GameInfo()
-    var isPlayerMoved:Bool = false
+    var gameInfo = GameInfo()
+    var isPlayerMoved = false
     
     override func didMove(to view: SKView) {
         
@@ -191,7 +191,7 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
     
    private func loadgameinfo(){
         // Check if any error from loading gameinfo
-        let check = gameinfo.load(scene: self)
+        let check = gameInfo.load(scene: self)
         
         if(!check.0){
             print("LOADING ERROR: ", check.1)
@@ -199,7 +199,7 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
         }
     
         // Add Character
-        self.addChild(gameinfo.getCurrentToonNode())
+        self.addChild(gameInfo.getCurrentToonNode())
     }
     
    private func createUIButton(bname: String, offsetPosX dx:CGFloat, offsetPosY dy:CGFloat) -> SKSpriteNode{
@@ -225,19 +225,19 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
         let childs = self.nodes(at: pos)
         for c in childs{
             if c.name == "character_building_button"{
-                prepareToChangeScene(scene: .Character_Menu)
+                prepareToChangeScene(scene: .CharacterMenu)
             }
         }
     }
     
     @objc func handlePanFrom(recognizer : UIPanGestureRecognizer) {
         
-        let toon = gameinfo.getCurrentToon()
-        let player = gameinfo.getCurrentToonNode()
+        let toon = gameInfo.getCurrentToon()
+        let player = gameInfo.getCurrentToonNode()
         
         if !isPlayerMoved{
             isPlayerMoved = true
-            gameinfo.changeGameState(.Start)
+            gameInfo.changeGameState(.start)
         }
         
         if recognizer.state == .began {
@@ -340,8 +340,8 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
     }
     
     func contactUpdate(lowNode: SKSpriteNode, highNode: SKSpriteNode, contactType:ContactType){
-        let regular = gameinfo.regularEnemy
-        let boss = gameinfo.boss
+        let regular = gameInfo.regularEnemy
+        let boss = gameInfo.boss
         
         switch contactType{
             
@@ -349,7 +349,7 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
             // Generate FX Effect
                 //converting bullet to mainscene's coordinate
             let newPos = self.convert(highNode.position, from: highNode.parent!)
-            let effect = gameinfo.getToonBulletEmmiterNode(x: newPos.x, y: newPos.y)
+            let effect = gameInfo.getToonBulletEmmiterNode(x: newPos.x, y: newPos.y)
             self.addChild(effect)
             // update enemy
             destroy(sknode: highNode)
@@ -388,8 +388,8 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
             destroy(sknode: lowNode)
             
         case .PlayerGetCoin:
-            self.run(self.gameinfo.mainAudio.getAction(type: .Coin))
-            self.gameinfo.addCoin(amount: 1)
+            self.run(self.gameInfo.mainAudio.getAction(type: .Coin))
+            self.gameInfo.addCoin(amount: 1)
             destroy(sknode: highNode)
             
         case .None:
@@ -414,18 +414,18 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
             self.physicsWorld.speed = 0.4
             
             self.run(SKAction.sequence([SKAction.wait(forDuration: 4), SKAction.run {
-            self.gameinfo.prepareToChangeScene()
+            self.gameInfo.prepareToChangeScene()
             self.recursiveRemovingSKActions(sknodes: self.children)
             self.removeAllChildren()
             self.removeAllActions()
                 
             let scene = EndGame(size: self.size)
-                scene.collectedCoins = self.gameinfo.getCurrentGold()
+                scene.collectedCoins = self.gameInfo.getCurrentGold()
                 self.view?.presentScene(scene)
                 }]))
-        case .Character_Menu:
+        case .CharacterMenu:
             
-            self.gameinfo.prepareToChangeScene()
+            self.gameInfo.prepareToChangeScene()
             self.recursiveRemovingSKActions(sknodes: self.children)
             self.removeAllChildren()
             self.removeAllActions()

@@ -24,16 +24,16 @@ class EnemyModel {
     }
     
     enum BossType {
-        case None
-        case Pinky
-        case Bomber
+        case none
+        case pinky
+        case bomber
     }
     
     // Shared Variables
     private var enemyType: EnemyType
     private var enemyModel = SKSpriteNode()
     private var currency = Currency(type: .Coin)
-    private var bossType: BossType = .None
+    private var bossType: BossType = .none
     private var bossBaseHP :CGFloat = 1500.0
     private var regularBaseHP: CGFloat = 100.0
     
@@ -59,11 +59,11 @@ class EnemyModel {
         case .boss:
             let chance = randomInt(min: 0, max: 100)
                 if chance < 50{
-                    bossType = .Bomber
+                    bossType = .bomber
                     enemyModel = Bomber(hp: bossBaseHP)
                 }
                 else{
-                    bossType = .Pinky
+                    bossType = .pinky
                     enemyModel = Pinky(hp: bossBaseHP, lives: 2, isClone: false)
                 }
             
@@ -114,7 +114,7 @@ class EnemyModel {
             if (ofTarget.hp <= 0){
                 ofTarget.physicsBody?.categoryBitMask = PhysicsCategory.None
                 enemyHpBar.removeFromParent()
-                explode(sknode: ofTarget)
+                explode(node: ofTarget)
                 return
             }
             else{
@@ -140,16 +140,16 @@ class EnemyModel {
             }
     }
     
-    internal func explode(sknode: SKSpriteNode){
+    internal func explode(node: SKSpriteNode){
         let rewardCount:Int = randomInt(min: 1, max: 4)
         
-        var posX = sknode.position.x
-        var posY = sknode.position.y
+        var posX = node.position.x
+        var posY = node.position.y
         
         if self.enemyType == .regular{
             // converting to position in scene's view... required because its parent is not the root view
-            posX = sknode.position.x + screenSize.width/2
-            posY = sknode.parent!.frame.size.height/2 + 200 + sknode.position.y  + screenSize.height
+            posX = node.position.x + screenSize.width/2
+            posY = node.parent!.frame.size.height/2 + 200 + node.position.y  + screenSize.height
         }
         
         for _ in 0..<rewardCount {
@@ -162,33 +162,33 @@ class EnemyModel {
             delegate?.addChild(reward)
         }
 
-        sknode.removeAllActions()
+        node.removeAllActions()
         
         switch (enemyType){
         case .boss:
-            if bossType == .Bomber{
+            if bossType == .bomber{
                 
                 let mainBoss = enemyModel as! Bomber
                 mainBoss.defeated()
-                self.delegate?.changeGameState(.WaitingState)
+                self.delegate?.changeGameState(.waitingState)
             }
-            else if bossType == .Pinky{
-                let minion = sknode.parent! as! Pinky
+            else if bossType == .pinky{
+                let minion = node.parent! as! Pinky
                 minion.multiply()
                 
                 let mainBoss = enemyModel as! Pinky
                 print("calling is defeated....")
                 if mainBoss.isDefeated(){
-                    self.delegate?.changeGameState(.WaitingState)
+                    self.delegate?.changeGameState(.waitingState)
                 }
             }
             
         case .regular:
             let mainReg = enemyModel as! RegularEnemy
-            mainReg.defeated(sknode: sknode)
-            sknode.run((delegate?.mainAudio.getAction(type: .Puff))!)
+            mainReg.defeated(sknode: node)
+            node.run((delegate?.mainAudio.getAction(type: .Puff))!)
         default:
-            sknode.removeFromParent()
+            node.removeFromParent()
         }
 
     }

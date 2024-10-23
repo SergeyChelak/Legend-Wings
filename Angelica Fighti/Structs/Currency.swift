@@ -35,7 +35,7 @@ struct Currency{
         
     }
     
-    func createCoin(posX:CGFloat, posY:CGFloat, width w: CGFloat, height h: CGFloat, createPhysicalBody:Bool, animation: Bool) -> SKSpriteNode{
+    func createCoin(posX:CGFloat, posY:CGFloat, width w: CGFloat, height h: CGFloat, createPhysicalBody:Bool, animation: Bool) -> SKSpriteNode {
         // let c = SKSpriteNode(imageNamed: coinSpriteName!)
         let c = SKSpriteNode(texture: global.getMainTexture(main: .Gold))
         //c.size = CGSize(width: 30, height: 30)
@@ -43,15 +43,15 @@ struct Currency{
         c.position = CGPoint(x: posX, y: posY)
         c.name = "coin"
         
-        
-        if (createPhysicalBody){
-            //c.physicsBody =  SKPhysicsBody(texture: c.texture!, size: c.size)
-            c.physicsBody = SKPhysicsBody(circleOfRadius: 15)
-            c.physicsBody!.isDynamic = true // allow physic simulation to move it
-            c.physicsBody!.categoryBitMask = PhysicsCategory.Currency
-            c.physicsBody!.contactTestBitMask = PhysicsCategory.Player
-            c.physicsBody!.collisionBitMask = PhysicsCategory.Wall
-            c.physicsBody!.fieldBitMask = GravityCategory.Player // Pullable by player
+        if (createPhysicalBody) {
+            let physicsBody = SKPhysicsBody(circleOfRadius: 15)
+            physicsBody.isDynamic = true // allow physic simulation to move it
+            physicsBody.categoryBitMask = PhysicsCategory.Currency
+            physicsBody.contactTestBitMask = PhysicsCategory.Player
+            physicsBody.collisionBitMask = PhysicsCategory.Wall
+            physicsBody.fieldBitMask = GravityCategory.Player // Pullable by player
+            
+            c.physicsBody = physicsBody
         }
         
         if (animation){
