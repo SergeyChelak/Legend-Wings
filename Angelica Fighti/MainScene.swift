@@ -340,7 +340,7 @@ class MainScene:SKScene, SKPhysicsContactDelegate{
     }
     
     func contactUpdate(lowNode: SKSpriteNode, highNode: SKSpriteNode, contactType:ContactType){
-        let regular = gameinfo.regular_enemies
+        let regular = gameinfo.regularEnemy
         let boss = gameinfo.boss
         
         switch contactType{

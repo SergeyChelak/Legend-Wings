@@ -48,9 +48,9 @@ class GameInfo: GameInfoDelegate{
     
     // Public Variables
     var mainAudio:AVAudio
-    var regular_enemies:EnemyModel
-    var boss:EnemyModel
-    var fireball_enemy:EnemyModel
+    var regularEnemy: EnemyModel
+    var boss: EnemyModel
+    var fireballEnemy: EnemyModel
     var map:Map?
     
     
@@ -60,38 +60,30 @@ class GameInfo: GameInfoDelegate{
         currentGold = 0
         currentHighscore = 0
         account = AccountInfo()
-        fireball_enemy = EnemyModel(type: .Fireball)
-        regular_enemies = EnemyModel(type: .Regular)
+        fireballEnemy = EnemyModel(type: .Fireball)
+        regularEnemy = EnemyModel(type: .Regular)
         boss = EnemyModel(type: .Boss)
         gamestate = .NoState
         timePerWave = 3.0 // 3.0 is default
         infobar = Infobar(name: "infobar")
         // delegates
-        regular_enemies.delegate = self
+        regularEnemy.delegate = self
         boss.delegate = self
-        fireball_enemy.delegate = self
+        fireballEnemy.delegate = self
 
     }
     
     func load(scene: SKScene) -> (Bool, String){
-        
-        var loadStatus:(Bool, String) = (true, "No errors")
-        
         mainScene = scene
-        
         // play background music
         mainAudio.play(type: .Background_Start)
         if !account.load(){
             return (false, "account error")
         }
-        
         // update infobar
         infobar.updateGoldBalnceLabel(balance: account.getGoldBalance())
         addChild(infobar)
-        
-        loadStatus = self.createWalls(leftXBound: 0, rightXBound:screenSize.width, width: 50, height: screenSize.height)
-        
-        return loadStatus
+        return createWalls(leftXBound: 0, rightXBound:screenSize.width, width: 50, height: screenSize.height)
     }
     
     private func createWalls(leftXBound:CGFloat, rightXBound:CGFloat, width:CGFloat, height:CGFloat) -> (Bool, String){
@@ -111,28 +103,27 @@ class GameInfo: GameInfoDelegate{
     }
 
     private func didFinishSpawningEnemy(){
-        
-        mainScene!.run(SKAction.sequence([SKAction.run {
+        mainScene?.run(SKAction.sequence([SKAction.run { [weak self] in
             // update gamestate
-            self.changeGameState(.BossEncounter)
+            self?.changeGameState(.BossEncounter)
             // show boss incoming
-            }, SKAction.wait(forDuration: 5), SKAction.run {
-                // summon boss
-                self.boss.spawn(scene: self.mainScene!)
-            }]))
+        }, SKAction.wait(forDuration: 5), SKAction.run { [weak self] in
+            guard let self, let mainScene = self.mainScene else { return }
+            // summon boss
+            self.boss.spawn(scene: mainScene)
+        }]))
     }
     
     //  Only called when the gamestate is spawning. 
     //  This function is called every second.
     
-    @objc private func running(){
+    @objc private func running() {
         let random = randomInt(min: 0, max: 100)
         // Fireball
         if random < 10 {
           //  print("Fireball called with random: ", random)
-            fireball_enemy.spawn(scene: mainScene!)
+            fireballEnemy.spawn(scene: mainScene!)
         }
-        
     }
     
     private func updateGameState(){
@@ -165,38 +156,45 @@ class GameInfo: GameInfoDelegate{
                     map.run()
                 }])
                 
-                // Create 4 clouds
-                for i in 0...3{
-                    let cloud = SKSpriteNode()
-                    if i % 2 == 0 {
-                        cloud.texture = global.getMainTexture(main: .StartCloud_1)
-                        cloud.name = Global.Main.StartCloud_1.rawValue + String(i)
-                    }
-                    else{
-                        cloud.texture = global.getMainTexture(main: .StartCloud_2)
-                        cloud.name = Global.Main.StartCloud_2.rawValue + String(i)
-                    }
-                    cloud.size = CGSize(width: screenSize.width, height: screenSize.height*1.5)
-                    cloud.anchorPoint = CGPoint(x: 0.5, y: 0)
-                    cloud.position = CGPoint(x: screenSize.width/2, y: screenSize.height)
-                    cloud.zPosition = -1
-                    mainScene.addChild(cloud)
+            spawnClouds()
+                .forEach {
+                    mainScene.addChild($0)
                 }
                 
                 // Running Actions
                 infobar.fadeAway()
                 
-            mainScene.run(SKAction.sequence([SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "0"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "1"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "2"), SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "3")]))
+            mainScene.run(SKAction.sequence([
+                SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "0"),
+                SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "1"),
+                SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_1.rawValue + "2"),
+                SKAction.wait(forDuration: 0.4), SKAction.run(moveDownCloud, onChildWithName: Global.Main.StartCloud_2.rawValue + "3")
+            ]))
                 
-            mainScene.run(SKAction.sequence([buildingsAction, SKAction.wait(forDuration: 3), SKAction.run{self.changeGameState(.Spawning)
-                    }, SKAction.wait(forDuration: 0.2), SKAction.run { self.account.getCurrentToon().getNode().run(SKAction.repeatForever(SKAction.sequence([SKAction.run {
-
-                        self.addChild(self.account.getCurrentToon().getBullet().shoot())
-                        }, SKAction.wait(forDuration: 0.06)])))
-                    }]))
+            mainScene.run(SKAction.sequence([
+                buildingsAction,
+                SKAction.wait(forDuration: 3),
+                SKAction.run {
+                    self.changeGameState(.Spawning)
+                },
+                SKAction.wait(forDuration: 0.2),
+                SKAction.run { [weak self] in
+                    guard let self else {
+                        return
+                    }
+                    let currentToon = self.account.getCurrentToon()
+                    let sequence = SKAction.sequence([
+                        SKAction.run {
+                            self.addChild(currentToon.getBullet().shoot())
+                        },
+                        SKAction.wait(forDuration: 0.06)
+                    ])
+                    currentToon.getNode().run(SKAction.repeatForever(sequence))
+                }
+            ]))
         case .WaitingState:
-            regular_enemies.increaseDifficulty()
-            fireball_enemy.increaseDifficulty()
+            regularEnemy.increaseDifficulty()
+            fireballEnemy.increaseDifficulty()
             boss.increaseDifficulty()
             self.changeGameState(.Spawning)
         case .Spawning:
@@ -206,9 +204,12 @@ class GameInfo: GameInfoDelegate{
             
             wavesForNextLevel = randomInt(min: 5, max: 10)
             
-            let action = SKAction.sequence([SKAction.run({
-                self.regular_enemies.spawn(scene: mainScene)
-            }), SKAction.wait(forDuration: 3)])
+            let action = SKAction.sequence([
+                SKAction.run { [weak self] in
+                    self?.regularEnemy.spawn(scene: mainScene)
+                },
+                SKAction.wait(forDuration: 3)
+            ])
             
             //totalWaves
             //wavesForNextLevel
@@ -276,8 +277,8 @@ class GameInfo: GameInfoDelegate{
     
     internal func prepareToChangeScene(){
         boss.delegate = nil
-        regular_enemies.delegate = nil
-        fireball_enemy.delegate = nil
+        regularEnemy.delegate = nil
+        fireballEnemy.delegate = nil
         mainAudio.stop()
         map?.prepareToChangeScene()
         timer?.invalidate()

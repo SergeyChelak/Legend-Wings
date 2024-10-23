@@ -57,7 +57,7 @@ class EnemyModel: NSObject{
         super.init()
     }
     
-    internal func spawn(scene :SKScene){
+    internal func spawn(scene: SKScene){
         
         switch enemyType {
         case .Regular:

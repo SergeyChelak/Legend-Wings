@@ -23,3 +23,22 @@ func createWall(_ data: WallData) -> SKSpriteNode {
     wall.physicsBody = physicsBody
     return wall
 }
+
+func spawnClouds() -> [SKSpriteNode] {
+    (0...3).map { i in
+        let cloud = SKSpriteNode()
+        if i % 2 == 0 {
+            cloud.texture = global.getMainTexture(main: .StartCloud_1)
+            cloud.name = Global.Main.StartCloud_1.rawValue + String(i)
+        }
+        else{
+            cloud.texture = global.getMainTexture(main: .StartCloud_2)
+            cloud.name = Global.Main.StartCloud_2.rawValue + String(i)
+        }
+        cloud.size = CGSize(width: screenSize.width, height: screenSize.height*1.5)
+        cloud.anchorPoint = CGPoint(x: 0.5, y: 0)
+        cloud.position = CGPoint(x: screenSize.width/2, y: screenSize.height)
+        cloud.zPosition = -1
+        return cloud
+    }
+}
