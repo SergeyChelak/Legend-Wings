@@ -10,16 +10,14 @@ import Foundation
 import SpriteKit
 
 
-protocol GameInfoDelegate{
-    
+protocol GameInfoDelegate: AnyObject {
     var mainAudio:AVAudio {get}
     func addChild(_ sknode: SKNode)
     func changeGameState(_ state: GameState)
     func getCurrentToonNode() -> SKSpriteNode
-    
 }
 
-class GameInfo: GameInfoDelegate{
+class GameInfo: GameInfoDelegate {
     
     deinit {
         print ("GameInfo Class deinitiated!")
@@ -60,9 +58,9 @@ class GameInfo: GameInfoDelegate{
         currentGold = 0
         currentHighscore = 0
         account = AccountInfo()
-        fireballEnemy = EnemyModel(type: .Fireball)
-        regularEnemy = EnemyModel(type: .Regular)
-        boss = EnemyModel(type: .Boss)
+        fireballEnemy = EnemyModel(type: .fireball)
+        regularEnemy = EnemyModel(type: .regular)
+        boss = EnemyModel(type: .boss)
         gamestate = .NoState
         timePerWave = 3.0 // 3.0 is default
         infobar = Infobar(name: "infobar")
@@ -116,7 +114,6 @@ class GameInfo: GameInfoDelegate{
     
     //  Only called when the gamestate is spawning. 
     //  This function is called every second.
-    
     @objc private func running() {
         let random = randomInt(min: 0, max: 100)
         // Fireball
@@ -297,11 +294,11 @@ class GameInfo: GameInfoDelegate{
     
     // delegate functions
     internal func addChild(_ sknode: SKNode){
-        guard let mainscene = mainScene else{
+        guard let mainScene else{
             print ("Error:: mainScene does not exist - check Gameinfo Class/ addChild Function")
             return
         }
-        mainscene.addChild(sknode)
+        mainScene.addChild(sknode)
     }
     
     internal func changeGameState(_ state: GameState){

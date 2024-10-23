@@ -52,8 +52,7 @@ class CharacterMenuScene:SKScene{
         currToonIndex = gameinfo.requestCurrentToonIndex()
         loadBackground()
         load()
-        
-        }
+    }
     
     private func loadBackground(){
         let bg = SKSpriteNode(texture: global.getMainTexture(main: .Character_Menu_Background))

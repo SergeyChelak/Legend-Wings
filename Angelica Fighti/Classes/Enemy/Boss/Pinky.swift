@@ -138,17 +138,19 @@ class Pinky:Enemy{
         rightWingText.append(global.getMainTexture(main: .Boss_Pinky_Right_Wing))
         
         
-        root.physicsBody = SKPhysicsBody(circleOfRadius: body.size.width/2)
-        root.physicsBody!.isDynamic = true
-        root.physicsBody!.affectedByGravity = false
-        root.physicsBody!.categoryBitMask = PhysicsCategory.Imune
-        root.physicsBody!.friction = 0
-        root.physicsBody!.collisionBitMask = PhysicsCategory.Wall
-        root.physicsBody!.restitution = 1
-        root.physicsBody!.allowsRotation = false
-        root.physicsBody!.linearDamping = 0
-        root.physicsBody!.fieldBitMask = GravityCategory.None
-        
+        root.physicsBody = {
+            let physicsBody = SKPhysicsBody(circleOfRadius: body.size.width/2)
+            physicsBody.isDynamic = true
+            physicsBody.affectedByGravity = false
+            physicsBody.categoryBitMask = PhysicsCategory.Imune
+            physicsBody.friction = 0
+            physicsBody.collisionBitMask = PhysicsCategory.Wall
+            physicsBody.restitution = 1
+            physicsBody.allowsRotation = false
+            physicsBody.linearDamping = 0
+            physicsBody.fieldBitMask = GravityCategory.None
+            return physicsBody
+        }()
         root.addHealthBar()
         setInitialAction()
         

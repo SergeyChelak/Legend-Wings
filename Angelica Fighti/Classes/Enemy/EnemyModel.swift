@@ -10,100 +10,96 @@ import Foundation
 import AVFoundation
 import SpriteKit
 
-class EnemyModel: NSObject{
+class EnemyModel {
     
     deinit{
         print("EnemyModel Class Deinitiated")
     }
     
-    enum EnemyType: String{
-        case Boss = "Boss Type"
-        case Regular = "Regular Type"
-        case Fireball = "Fireball Type"
-        case Special = "Special Type"
+    enum EnemyType: String {
+        case boss = "Boss Type"
+        case regular = "Regular Type"
+        case fireball = "Fireball Type"
+        case special = "Special Type"
     }
     
-    enum BossType{
+    enum BossType {
         case None
         case Pinky
         case Bomber
     }
     
-    
     // Shared Variables
-    private var enemyType:EnemyType
-    private var enemyModel:SKSpriteNode!
-    private var currency:Currency?
-    private var bossType:BossType
-    private var BossBaseHP:CGFloat = 1500.0
-    private var RegularBaseHP:CGFloat = 100.0
+    private var enemyType: EnemyType
+    private var enemyModel = SKSpriteNode()
+    private var currency = Currency(type: .Coin)
+    private var bossType: BossType = .None
+    private var bossBaseHP :CGFloat = 1500.0
+    private var regularBaseHP: CGFloat = 100.0
     
     
-    private var velocity:CGVector = CGVector(dx: 0, dy: -350)
+    private var velocity = CGVector(dx: 0, dy: -350)
     
     
     // Boss Variables - Implement later
     private let PinkyPercentage:Int = 100
     private let BomberPercentage:Int = 0
     
-    var delegate:GameInfoDelegate?
+    weak var delegate: GameInfoDelegate?
     
     init(type: EnemyType){
-        currency = Currency(type: .Coin)
         enemyType = type
-        enemyModel = SKSpriteNode()
-        bossType = .None
-        
-        super.init()
     }
     
     internal func spawn(scene: SKScene){
         
         switch enemyType {
-        case .Regular:
-            enemyModel = RegularEnemy(baseHp: RegularBaseHP, speed: velocity)
-        case .Boss:
+        case .regular:
+            enemyModel = RegularEnemy(baseHp: regularBaseHP, speed: velocity)
+        case .boss:
             let chance = randomInt(min: 0, max: 100)
                 if chance < 50{
                     bossType = .Bomber
-                    enemyModel = Bomber(hp: BossBaseHP)
+                    enemyModel = Bomber(hp: bossBaseHP)
                 }
                 else{
                     bossType = .Pinky
-                    enemyModel = Pinky(hp: BossBaseHP, lives: 2, isClone: false)
+                    enemyModel = Pinky(hp: bossBaseHP, lives: 2, isClone: false)
                 }
             
-        case .Fireball:
-            enemyModel = Fireball(target: (delegate?.getCurrentToonNode())!, speed: velocity)
+        case .fireball:
+            guard let node = delegate?.getCurrentToonNode() else {
+                print("ERR1000: delegate wasn't set")
+                return
+            }
+            enemyModel = Fireball(target: node, speed: velocity)
         default:
             break
         }
         
-        scene.addChild(enemyModel!)
+        scene.addChild(enemyModel)
     }
     
     internal func increaseDifficulty(){
         // Increase HP & Speed
         switch enemyType {
-        case .Regular:
-            RegularBaseHP += 100
+        case .regular:
+            regularBaseHP += 100
             velocity.dy -= 50
-        case .Boss:
-            BossBaseHP += 1500
-        case .Fireball:
+        case .boss:
+            bossBaseHP += 1500
+        case .fireball:
             velocity.dy -= 250
         default:
             print("No increase for \(enemyType.rawValue)")
         }
     }
     
-    internal func decreaseHP(ofTarget: SKSpriteNode, hitBy: SKSpriteNode){
-        
-        
+    internal func decreaseHP(ofTarget: SKSpriteNode, hitBy: SKSpriteNode) {
         guard let rootBar = ofTarget.childNode(withName: "rootBar") as? SKSpriteNode,
-              let enemyHpBar = rootBar.childNode(withName: "hpBar")
-              else {return}
-        
+              let enemyHpBar = rootBar.childNode(withName: "hpBar") else {
+            return
+        }
         guard let ofTarget = ofTarget as? Enemy else{
             return
         }
@@ -136,7 +132,7 @@ class EnemyModel: NSObject{
         }
         
         let percentage = sknode.hp/sknode.maxHp
-        if (percentage < 0.3){
+        if percentage < 0.3 {
                 hpBar.run(SKAction.colorize(with: .red, colorBlendFactor: 1, duration: 0.1))
             }
         else if (percentage < 0.55){
@@ -150,33 +146,26 @@ class EnemyModel: NSObject{
         var posX = sknode.position.x
         var posY = sknode.position.y
         
-        if self.enemyType == .Regular{
+        if self.enemyType == .regular{
             // converting to position in scene's view... required because its parent is not the root view
             posX = sknode.position.x + screenSize.width/2
             posY = sknode.parent!.frame.size.height/2 + 200 + sknode.position.y  + screenSize.height
         }
         
-        for _ in 0..<rewardCount{
-            
-            let reward = currency?.createCoin(posX: posX, posY: posY, width: 30, height: 30, createPhysicalBody: true, animation: true)
-            
+        for _ in 0..<rewardCount {
+            let reward = currency.createCoin(posX: posX, posY: posY, width: 30, height: 30, createPhysicalBody: true, animation: true)
             let impulse = CGVector(dx: random(min: -25, max: 25), dy: random(min:10, max:35))
-            
-            reward?.run(SKAction.sequence([SKAction.applyForce(impulse , duration: 0.2), SKAction.wait(forDuration: 2), SKAction.removeFromParent()]))
-            
-            if let r = reward{
-                delegate?.addChild(r)
-            }
-            else{
-                
-                print("ERROR ON CLASS ENEMY. Check Method Explosion. ")
-            }
+            reward.run(SKAction.sequence([
+                SKAction.applyForce(impulse , duration: 0.2),
+                SKAction.wait(forDuration: 2), SKAction.removeFromParent()
+            ]))
+            delegate?.addChild(reward)
         }
 
         sknode.removeAllActions()
         
         switch (enemyType){
-        case .Boss:
+        case .boss:
             if bossType == .Bomber{
                 
                 let mainBoss = enemyModel as! Bomber
@@ -194,7 +183,7 @@ class EnemyModel: NSObject{
                 }
             }
             
-        case .Regular:
+        case .regular:
             let mainReg = enemyModel as! RegularEnemy
             mainReg.defeated(sknode: sknode)
             sknode.run((delegate?.mainAudio.getAction(type: .Puff))!)
@@ -207,8 +196,4 @@ class EnemyModel: NSObject{
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
-    
 }
