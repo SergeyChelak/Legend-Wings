@@ -30,7 +30,7 @@ extension SKScene {
         childNode(withName: name)?.removeFromParent()
     }
     
-    func removeChildren(_ names: [String]) {
+    func removeChildren(_ names: String...) {
         names.forEach(removeChild(withName:))
     }    
 }

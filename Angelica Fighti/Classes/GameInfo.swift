@@ -143,12 +143,10 @@ class GameInfo: GameInfoDelegate {
             // TODO: move `main_menu_middle_root` to constant
                 let buildingsAction = SKAction.sequence([SKAction.run(SKAction.group([scaleAction, moveAction]), onChildWithName: "main_menu_middle_root"), SKAction.wait(forDuration: 1.5), SKAction.run {
                     mainScene.removeChildren(
-                        [
                             "main_menu_middle_root",
                             Global.Main.Main_Menu_Background_1.rawValue,
                             Global.Main.Main_Menu_Background_2.rawValue,
                             Global.Main.Main_Menu_Background_3.rawValue
-                        ]
                     )
                     map.run()
                 }])
